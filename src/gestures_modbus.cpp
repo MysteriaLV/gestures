@@ -1,21 +1,5 @@
 #include <SimpleModbusSlave.h>
-
-extern void modbus_setup();
-extern void modbus_loop();
-extern unsigned int holdingRegs[];
-
-
-//////////////// registers of GESTURES ///////////////////
-enum {
-	// The first register starts at address 0
-	ACTIONS,      // Always present, used for incoming actions
-
-	// Any registered events, denoted by 'triggered_by_register' in rs485_node of Lua script, 1 and up
-	SOLVE,
-
-	TOTAL_ERRORS,     // leave this one, error counter
-	TOTAL_REGS_SIZE   // INTERNAL: total number of registers for function 3 and 16 share the same register array
-};
+#include "gestures_modbus.h"
 
 unsigned int holdingRegs[TOTAL_REGS_SIZE]; // function 3 and 16 register array
 ////////////////////////////////////////////////////////////
@@ -65,6 +49,10 @@ void modbus_setup() {
 	modbus_configure(57600, 3, SSerialTxControl, TOTAL_REGS_SIZE);
 	holdingRegs[ACTIONS] = 0;
 	holdingRegs[SOLVE] = 0;
+	holdingRegs[LEFT] = 0;
+	holdingRegs[RIGHT] = 0;
+	holdingRegs[UP] = 0;
+	holdingRegs[DOWN] = 0;
 	// Sample calls
 	pinMode(LED_BUILTIN, OUTPUT);
 	// buttonStatus_setup(SOLVE, <buttonPin>);
@@ -77,6 +65,10 @@ void modbus_loop() {
 
 	// Notify main console of local events
 	// holdingRegs[SOLVE] = 1;
+	// holdingRegs[LEFT] = 1;
+	// holdingRegs[RIGHT] = 1;
+	// holdingRegs[UP] = 1;
+	// holdingRegs[DOWN] = 1;
 
 
 	// Sample calls
