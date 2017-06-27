@@ -1,76 +1,113 @@
-#include <SimpleModbusSlave.h>
 #include "gestures_modbus.h"
 
-unsigned int holdingRegs[TOTAL_REGS_SIZE]; // function 3 and 16 register array
-////////////////////////////////////////////////////////////
+
+#ifdef USE_SOFTWARE_SERIAL
+	#include <ModbusSerial.h>
+    ModbusSerial mb;
+
+    #define SSerialTxControl 6   //RS485 Direction control
+    #define SSerialRX        8  //Serial Receive pin
+    #define SSerialTX        9  //Serial Transmit pin
+    SoftwareSerial RS485Serial(SSerialRX, SSerialTX); // RX, TX
+#endif
+
+#ifdef USE_ALT_SOFT_SERIAL
+	#include <ModbusSerial.h>
+    ModbusSerial mb;
+
+    #define SSerialTxControl 6   //RS485 Direction control
+    #define SSerialRX        8  //Serial Receive pin
+    #define SSerialTX        9  //Serial Transmit pin
+    AltSoftSerial RS485Serial(SSerialRX, SSerialTX); // RX, TX
+#endif
+
+#ifdef USE_SERIAL1
+#include <ModbusSerial.h>
+    ModbusSerial mb;
+
+    #define SSerialRX        19  //Serial3 Receive pin (just a reference, can't be changed)
+    #define SSerialTX        18  //Serial3 Transmit pin (just a reference, can't be changed)
+    #define SSerialTxControl 20   //RS485 Direction control
+
+    #define RS485Serial Serial1
+#endif
+
+#ifdef USE_ESP8266_TCP
+#include <ESP8266WiFi.h>
+    #include <ModbusIP_ESP8266.h>
+    ModbusIP mb;
+#endif
 
 // Action handler. Add all your actions mapped by action_id in rs485_node of Lua script
 void process_actions() {
-	if (holdingRegs[ACTIONS] == 0)
+	if (mb.Hreg(ACTIONS) == 0)
 		return;
 
-	switch (holdingRegs[ACTIONS]) {
+	switch (mb.Hreg(ACTIONS)) {
 		case 1 : // Put here code for Reset
-			Serial.println("[Reset] action fired");
-			digitalWrite(LED_BUILTIN, LOW);
-			break;
+			Serial.println("[Reset] action fired");break;
 		case 2 : // Put here code for Something_else
-			Serial.println("[Something_else] action fired");
-			digitalWrite(LED_BUILTIN, HIGH);
-			break;
-		default:
-			break;
+			Serial.println("[Something_else] action fired");break;
 	}
 
 	// Signal that action was processed
-	holdingRegs[ACTIONS] = 0;
+	mb.Hreg(ACTIONS, 0);
 }
 
-// Just debug functions for easy testing. Won't be used probably
-/* Holds current button state in register */
-void buttonStatus(int reg, uint8_t pin) { // LOOP
-	holdingRegs[reg] = digitalRead(pin) ? 1 : 0;
+void modbus_setup()
+{
+	Serial.println("ModBus Slave GESTURES:3 for lua/Aliens.lua");
+
+#if defined(USE_SERIAL1) || defined(USE_SOFTWARE_SERIAL)
+	mb.config(&RS485Serial, 57600, SSerialTxControl);
+	mb.setSlaveId(3);
+#endif
+
+
+#ifdef USE_ESP8266_TCP
+	mb.config("Aliens", "123123");
+  WiFi.config(IPAddress(3), IPAddress(), IPAddress(), IPAddress(), IPAddress());
+
+  Serial.print("Connecting to Aliens ");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println(" CONNECTED!");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  Serial.print("Netmask: ");
+  Serial.println(WiFi.subnetMask());
+
+  Serial.print("Gateway: ");
+  Serial.println(WiFi.gatewayIP());
+#endif
+
+	mb.addHreg(ACTIONS, 0);
+	mb.addHreg(SOLVE, 0);
+	mb.addHreg(LEFT, 0);
+	mb.addHreg(RIGHT, 0);
+	mb.addHreg(UP, 0);
+	mb.addHreg(DOWN, 0);
+
 }
 
-void buttonStatus_setup(int reg, uint8_t pin) { // SETUP
-	pinMode(pin, INPUT_PULLUP);
-}
-/////////////////////////////////////////////////////////////////
-
-void modbus_setup() {
-	Serial.println("Serial ModBus Slave GESTURES:3 for lua/Aliens.lua");
-
-	/* parameters(long baudrate,
-				  unsigned char ID,
-				  unsigned char transmit enable pin,
-				  unsigned int holding registers size)
-	*/
-
-	modbus_configure(57600, 3, SSerialTxControl, TOTAL_REGS_SIZE);
-	holdingRegs[ACTIONS] = 0;
-	holdingRegs[SOLVE] = 0;
-	holdingRegs[LEFT] = 0;
-	holdingRegs[RIGHT] = 0;
-	holdingRegs[UP] = 0;
-	holdingRegs[DOWN] = 0;
-	// Sample calls
-	pinMode(LED_BUILTIN, OUTPUT);
-	// buttonStatus_setup(SOLVE, <buttonPin>);
+void modbus_set(word event, word value) {
+	mb.Hreg(event, value);
 }
 
-
-void modbus_loop() {
-	holdingRegs[TOTAL_ERRORS] = modbus_update(holdingRegs);
+void modbus_loop()
+{
+	mb.task();              // not implemented yet: mb.Hreg(TOTAL_ERRORS, mb.task());
 	process_actions();
 
 	// Notify main console of local events
-	// holdingRegs[SOLVE] = 1;
-	// holdingRegs[LEFT] = 1;
-	// holdingRegs[RIGHT] = 1;
-	// holdingRegs[UP] = 1;
-	// holdingRegs[DOWN] = 1;
+	// mb.Hreg(SOLVE, 1);
+	// mb.Hreg(LEFT, 1);
+	// mb.Hreg(RIGHT, 1);
+	// mb.Hreg(UP, 1);
+	// mb.Hreg(DOWN, 1);
 
-
-	// Sample calls
-	// buttonStatus(SOLVE, <buttonPin>);
 }

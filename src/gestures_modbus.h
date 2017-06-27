@@ -5,6 +5,10 @@
 #ifndef GESTURES_GESTURES_MODBUS_H
 #define GESTURES_GESTURES_MODBUS_H
 
+#include <Arduino.h>
+#define USE_HOLDING_REGISTERS_ONLY
+#include <Modbus.h>
+
 //////////////// registers of GESTURES ///////////////////
 enum {
 	// The first register starts at address 0
@@ -23,6 +27,5 @@ enum {
 
 extern void modbus_setup();
 extern void modbus_loop();
-extern unsigned int holdingRegs[];
-
+extern void modbus_set(word event, word value);
 #endif //GESTURES_GESTURES_MODBUS_H

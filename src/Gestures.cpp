@@ -35,19 +35,31 @@ void gesture_loop() {
 		switch (gesture_data)                                 // When different gestures be detected, the variable 'gesture_data' will be set to different values by paj7620ReadReg(0x43, 1, &gesture_data).
 		{
 			case GES_RIGHT_FLAG:
-				holdingRegs[RIGHT] = 1;
+				modbus_set(RIGHT, 1);
+				modbus_set(LEFT, 0);
+				modbus_set(UP, 0);
+				modbus_set(DOWN, 0);
 				Serial.println("Right");
 				break;
 			case GES_LEFT_FLAG:
-				holdingRegs[LEFT] = 1;
+				modbus_set(RIGHT, 0);
+				modbus_set(LEFT, 1);
+				modbus_set(UP, 0);
+				modbus_set(DOWN, 0);
 				Serial.println("Left");
 				break;
 			case GES_UP_FLAG:
-				holdingRegs[UP] = 1;
+				modbus_set(RIGHT, 0);
+				modbus_set(LEFT, 0);
+				modbus_set(UP, 1);
+				modbus_set(DOWN, 0);
 				Serial.println("Up");
 				break;
 			case GES_DOWN_FLAG:
-				holdingRegs[DOWN] = 1;
+				modbus_set(RIGHT, 0);
+				modbus_set(LEFT, 0);
+				modbus_set(UP, 0);
+				modbus_set(DOWN, 1);
 				Serial.println("Down");
 				break;
 			default:
