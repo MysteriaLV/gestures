@@ -1,16 +1,17 @@
-//
-// Created by VermutMac on 6/15/2017.
-//
+#ifndef GESTURES_MODBUS_H
+#define GESTURES_MODBUS_H
 
-#ifndef GESTURES_GESTURES_MODBUS_H
-#define GESTURES_GESTURES_MODBUS_H
-
-#include <Arduino.h>
 #define USE_HOLDING_REGISTERS_ONLY
+#include <Arduino.h>
 #include <Modbus.h>
 
+extern void modbus_setup();
+extern void modbus_loop();
+extern void modbus_set(word event, word value);
+
 //////////////// registers of GESTURES ///////////////////
-enum {
+enum
+{
 	// The first register starts at address 0
 	ACTIONS,      // Always present, used for incoming actions
 
@@ -21,11 +22,6 @@ enum {
 	UP,
 	DOWN,
 
-	TOTAL_ERRORS,     // leave this one, error counter
-	TOTAL_REGS_SIZE   // INTERNAL: total number of registers for function 3 and 16 share the same register array
+	TOTAL_ERRORS     // leave this one, error counter
 };
-
-extern void modbus_setup();
-extern void modbus_loop();
-extern void modbus_set(word event, word value);
-#endif //GESTURES_GESTURES_MODBUS_H
+#endif //GESTURES_MODBUS_H
