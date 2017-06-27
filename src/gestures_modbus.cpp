@@ -67,7 +67,7 @@ void modbus_set(word event, word value) {
 void modbus_setup() {
 	Serial.println("ModBus Slave GESTURES:3 for lua/Aliens.lua");
 
-#if defined(USE_SERIAL1) || defined(USE_SOFTWARE_SERIAL)
+#ifndef USE_ESP8266_TCP
 	mb.config(&RS485Serial, 57600, SSerialTxControl);
 	mb.setSlaveId(3);
 #endif
