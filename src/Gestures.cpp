@@ -1,4 +1,4 @@
-#include <Arduino.h>
+//#include <Arduino.h>
 
 #include "softi2c_paj7620.h"
 #include "gestures_modbus.h"
@@ -7,7 +7,7 @@
 
 uint8_t gesture_data = 0, gesture_error;
 
-void setup() {
+void aa_setup() {
 	Serial.begin(115200);
 	modbus_setup();
 
@@ -69,7 +69,7 @@ void gesture_loop() {
 	}
 }
 
-void loop() {
+void aa_loop() {
 	do_modbus();
 	gesture_loop();
 }
