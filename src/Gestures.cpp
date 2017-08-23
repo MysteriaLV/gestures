@@ -25,9 +25,14 @@ void setup() {
 //	modbus_setup();
 	led_setup();
 
-	led_feedback_is_showing.begin().trace(Serial);
-	led_feedback_timer.begin(3000)
-			.onTimer(led_feedback_is_showing, Atm_bit::EVT_OFF);
+	led_feedback_is_showing
+			.begin()
+			.onChange(true, led_feedback_timer, Atm_timer::EVT_START)
+			.trace(Serial);
+	led_feedback_timer
+			.begin(3000)
+			.onFinish(led_feedback_is_showing, Atm_bit::EVT_OFF);
+//			.trace(Serial);
 
 
 	gesture_error = paj7620Init();            // initialize Paj7620 registers
@@ -61,7 +66,8 @@ void gesture_loop() {
 
 				Serial.println("Right");
 				led_show_picture(LED_RIGHT);
-				led_feedback_timer.start();
+				led_feedback_is_showing.on();
+
 				break;
 			case GES_LEFT_FLAG:
 				modbus_set(RIGHT, 0);
@@ -71,7 +77,7 @@ void gesture_loop() {
 
 				Serial.println("Left");
 				led_show_picture(LED_LEFT);
-				led_feedback_timer.start();
+				led_feedback_is_showing.on();
 				break;
 			case GES_UP_FLAG:
 				modbus_set(RIGHT, 0);
@@ -81,7 +87,7 @@ void gesture_loop() {
 
 				Serial.println("Up");
 				led_show_picture(LED_UP);
-				led_feedback_timer.start();
+				led_feedback_is_showing.on();
 				break;
 			case GES_DOWN_FLAG:
 				modbus_set(RIGHT, 0);
@@ -91,7 +97,7 @@ void gesture_loop() {
 
 				Serial.println("Down");
 				led_show_picture(LED_DOWN);
-				led_feedback_timer.start();
+				led_feedback_is_showing.on();
 				break;
 			default:
 				do_modbus(GES_REACTION_TIME);
