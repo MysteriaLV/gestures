@@ -1,16 +1,13 @@
 #include <Arduino.h>
 
-#include "softi2c_paj7620.h"
+#include "paj7620.h"
 #include "gestures_modbus.h"
 #include "led_matrix.h"
 #include "Automaton.h"
 
 /*
-GES_SDAPIN  A4
-GES_SCLPIN  A5
-
-//     LEDMatrix(a,  b,  c,  d,  oe, r1, latch, sck);
-LEDMatrix matrix(A0, A1, A2, A3, 2,  3,  4,     5);
+Serial1: RX0, TX1
+TWI: 2 (SDA) and 3 (SCL). Support TWI communication using the Wire library.
 
 */
 
@@ -28,11 +25,11 @@ void setup() {
 	led_feedback_is_showing
 			.begin()
 			.onChange(true, led_feedback_timer, Atm_timer::EVT_START);
-//			.trace(Serial);
+	//	    .trace(Serial);
 	led_feedback_timer
 			.begin(3000)
 			.onFinish(led_feedback_is_showing, Atm_bit::EVT_OFF);
-//			.trace(Serial);
+	//		.trace(Serial);
 
 
 	gesture_error = paj7620Init();            // initialize Paj7620 registers
