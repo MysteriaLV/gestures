@@ -9,8 +9,8 @@
 GES_SDAPIN  A4
 GES_SCLPIN  A5
 
-//     LEDMatrix(a, b, c, d, oe, r1, latch, sck);
-LEDMatrix matrix(4, 5, 6, 7, 8,  9,  10,    11);
+//     LEDMatrix(a,  b,  c,  d,  oe, r1, latch, sck);
+LEDMatrix matrix(A0, A1, A2, A3, 2,  3,  4,     5);
 
 */
 
@@ -22,13 +22,13 @@ uint8_t gesture_data = 0, gesture_error;
 
 void setup() {
 	Serial.begin(115200);
-//	modbus_setup();
+	modbus_setup();
 	led_setup();
 
 	led_feedback_is_showing
 			.begin()
-			.onChange(true, led_feedback_timer, Atm_timer::EVT_START)
-			.trace(Serial);
+			.onChange(true, led_feedback_timer, Atm_timer::EVT_START);
+//			.trace(Serial);
 	led_feedback_timer
 			.begin(3000)
 			.onFinish(led_feedback_is_showing, Atm_bit::EVT_OFF);
@@ -47,7 +47,7 @@ void setup() {
 void do_modbus(unsigned int delay_time = 0) {
 	long start = millis();
 	do {
-//		modbus_loop();
+		modbus_loop();
 	} while (millis() - start < delay_time);
 }
 
@@ -107,7 +107,7 @@ void gesture_loop() {
 }
 
 void loop() {
-//	do_modbus();
+	do_modbus();
 	automaton.run();
 
 	if (led_feedback_is_showing.state() == Atm_bit::ON)
