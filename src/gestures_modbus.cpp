@@ -7,11 +7,9 @@
 
 ModbusSerial mb;
 
-#define SSerialGND       10
-#define SSerialRX        9  //Serial Receive pin
-#define SSerialTX        8  //Serial Transmit pin
-#define SSerialVCC       7
-#define SSerialTxControl 6   //RS485 Direction control
+#define SSerialRX        10  //Serial3 Receive pin (just a reference, can't be changed)
+#define SSerialTX        11 //Serial3 Transmit pin (just a reference, can't be changed)
+#define SSerialTxControl 12   //RS485 Direction control
 SoftwareSerial RS485Serial(SSerialRX, SSerialTX); // RX, TX
 #endif
 
@@ -31,9 +29,9 @@ ModbusSerial mb;
 // https://www.arduino.cc/en/Reference/Serial
 // The Arduino Leonardo board uses Serial1 to communicate via TTL (5V) serial on pins 0 (RX) and 1 (TX).
 
-#define SSerialRX        0  //Serial3 Receive pin (just a reference, can't be changed)
-#define SSerialTX        1 //Serial3 Transmit pin (just a reference, can't be changed)
-#define SSerialTxControl 4   //RS485 Direction control
+#define SSerialRX        10  //Serial3 Receive pin (just a reference, can't be changed)
+#define SSerialTX        11 //Serial3 Transmit pin (just a reference, can't be changed)
+#define SSerialTxControl 12   //RS485 Direction control
 
 #define RS485Serial Serial1
 #endif
