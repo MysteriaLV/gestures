@@ -8,7 +8,6 @@
 /*
 Serial1: RX0, TX1
 TWI: 2 (SDA) and 3 (SCL). Support TWI communication using the Wire library.
-
 */
 
 #define GES_REACTION_TIME         100                // You can adjust the reaction time according to the actual circumstance.
@@ -27,7 +26,7 @@ void setup() {
 			.onChange(true, led_feedback_timer, Atm_timer::EVT_START);
 	//	    .trace(Serial);
 	led_feedback_timer
-			.begin(3000)
+			.begin(1500)
 			.onFinish(led_feedback_is_showing, Atm_bit::EVT_OFF);
 	//		.trace(Serial);
 
@@ -48,6 +47,22 @@ void do_modbus(unsigned int delay_time = 0) {
 	} while (millis() - start < delay_time);
 }
 
+int riddle_state = 0;
+
+void riddle_controller(word event) {
+	if (riddle_state == 0 && event == LEFT) riddle_state++;
+	else if (riddle_state == 1 && event == UP) riddle_state++;
+	else if (riddle_state == 2 && event == UP) riddle_state++;
+	else if (riddle_state == 3 && event == DOWN) {
+		modbus_set(COMPLETE, 1);
+		Serial.println("Complete");
+	} else if (event == LEFT) riddle_state = 1;
+	else
+		riddle_state = 0;
+
+	Serial.print("Riddle state: ");
+	Serial.println(riddle_state);
+}
 
 void gesture_loop() {
 	gesture_error = paj7620ReadReg(0x43, 1, &gesture_data);   // Read Bank_0_Reg_0x43/0x44 for gesture result.
@@ -60,6 +75,7 @@ void gesture_loop() {
 				modbus_set(LEFT, 0);
 				modbus_set(UP, 0);
 				modbus_set(DOWN, 0);
+				riddle_controller(RIGHT);
 
 				Serial.println("Right");
 				led_show_picture(LED_RIGHT);
@@ -71,6 +87,7 @@ void gesture_loop() {
 				modbus_set(LEFT, 1);
 				modbus_set(UP, 0);
 				modbus_set(DOWN, 0);
+				riddle_controller(LEFT);
 
 				Serial.println("Left");
 				led_show_picture(LED_LEFT);
@@ -81,6 +98,7 @@ void gesture_loop() {
 				modbus_set(LEFT, 0);
 				modbus_set(UP, 1);
 				modbus_set(DOWN, 0);
+				riddle_controller(UP);
 
 				Serial.println("Up");
 				led_show_picture(LED_UP);
@@ -91,6 +109,7 @@ void gesture_loop() {
 				modbus_set(LEFT, 0);
 				modbus_set(UP, 0);
 				modbus_set(DOWN, 1);
+				riddle_controller(DOWN);
 
 				Serial.println("Down");
 				led_show_picture(LED_DOWN);
@@ -112,3 +131,4 @@ void loop() {
 	else
 		gesture_loop();
 }
+

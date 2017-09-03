@@ -7,8 +7,6 @@
 #define WIDTH   16
 #define HEIGHT  16
 
-//LEDMatrix matrix(7, 8, 9,  10, 4, 11, 6, 5);
-//LEDMatrix matrix(8, 9, 10, 11, 5, 12, 7, 6);
 //     LEDMatrix(a, b, c, d, oe, r1, stb, clk);
 LEDMatrix matrix(5, 6, 7, 8, 0,  9,  4,   1);
 
