@@ -86,7 +86,7 @@ void modbus_setup() {
 #endif
 
 #ifndef USE_ESP8266_TCP
-	mb.config(&RS485Serial, 57600, SSerialTxControl);
+	mb.config(&RS485Serial, 31250, SSerialTxControl);
 	mb.setSlaveId(3);
 #else
 	mb.config("Aliens Room", "123123123");
