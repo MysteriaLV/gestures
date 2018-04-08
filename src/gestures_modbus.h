@@ -8,6 +8,8 @@
 extern void modbus_setup();
 extern void modbus_loop();
 extern void modbus_set(word event, word value);
+extern void completePuzzle();
+extern void resetPuzzle();
 
 //////////////// registers of GESTURES ///////////////////
 enum

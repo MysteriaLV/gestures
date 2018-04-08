@@ -51,16 +51,12 @@ void process_actions() {
 		case 1 : // Put here code for Reset
 			Serial.println("[Reset] action fired");
 			digitalWrite(LED_BUILTIN, HIGH);
-
-			mb.Hreg(COMPLETE, 0);
-			mb.Hreg(LEFT, 0);
-			mb.Hreg(RIGHT, 0);
-			mb.Hreg(UP, 0);
-			mb.Hreg(DOWN, 0);
+			resetPuzzle();
 			break;
 		case 2 : // Put here code for Complete
 			Serial.println("[Complete] action fired");
 			digitalWrite(LED_BUILTIN, LOW);
+            completePuzzle();
 			break;
 		default:
 			break;
