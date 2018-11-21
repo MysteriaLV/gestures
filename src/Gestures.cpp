@@ -39,7 +39,7 @@ void setup() {
 
 	magnet
 			.begin(PIN_A0)
-			.on();
+			.off();
 
 	// NOTE: is has "gaming mode" with "far/near" settings and it's set to "far" now!
 	do {
@@ -87,7 +87,7 @@ void riddle_controller(word event) {
 void completePuzzle() {
 	modbus_set(COMPLETE, 1);
 	Serial.println("Complete");
-	magnet.off();
+	magnet.on();
 }
 
 void resetPuzzle() {
@@ -96,7 +96,7 @@ void resetPuzzle() {
 	modbus_set(RIGHT, 0);
 	modbus_set(UP, 0);
 	modbus_set(DOWN, 0);
-	magnet.on();
+	magnet.off();
 }
 
 void gesture_loop() {
